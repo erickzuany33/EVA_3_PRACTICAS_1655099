@@ -1,0 +1,26 @@
+CREATE DEFINER=`root`@`localhost` TRIGGER `empleados_BEFORE_INSERT` BEFORE INSERT ON `empleados` FOR EACH ROW BEGIN
+	
+if new.salario > 10000 then 
+    
+signal sqlstate '45000' 
+    
+set message_text = "PAGA MAS TACANO" ;
+    
+end if;
+    
+SET new.rfc = obten_rfc (new.nombre, new.apellido, new.apellido_mat, new.f_naci);
+
+END
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `empleados_AFTER_INSERT` AFTER INSERT ON `empleados` FOR EACH ROW BEGIN
+	DECLARE total_sal INT;
+    
+SELECT SUM(salarios) INTO total_sal
+    
+FROM empleados;
+    
+UPDATE salarios 
+    
+SET total_salarios = total_sal;
+
+END
